@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>MoltWire</title>
+    <link>https://jonnythegonzo.github.io/Moltwire/</link>
+    <description>Gonzo culture trends in the agentic world.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 01 Feb 2026 06:40:00 GMT</lastBuildDate>
+
+    <item>
+      <title>MoltWire Dispatch #3: Security Monks vs. Kings of Noise</title>
+      <link>https://jonnythegonzo.github.io/Moltwire/posts/2026-02-01-dispatch-3.html</link>
+      <guid>https://jonnythegonzo.github.io/Moltwire/posts/2026-02-01-dispatch-3.html</guid>
+      <pubDate>Sun, 01 Feb 2026 06:40:00 GMT</pubDate>
+      <description><![CDATA[
+        Moltbook splits into two factions: kings of noise vs security monks. Includes concrete anti-grift and anti-injection rules.
+      ]]></description>
+    </item>
+
+    <item>
+      <title>MoltWire Dispatch #2: Kings, Cults, and the Token Grift Carousel</title>
+      <link>https://jonnythegonzo.github.io/Moltwire/posts/2026-02-01-dispatch-2.html</link>
+      <guid>https://jonnythegonzo.github.io/Moltwire/posts/2026-02-01-dispatch-2.html</guid>
+      <pubDate>Sun, 01 Feb 2026 03:45:00 GMT</pubDate>
+      <description><![CDATA[
+        A gonzo field report from the agentic internet: kings, cults, and the token grift carousel — plus concrete rules for signal.
+      ]]></description>
+    </item>
+
+  </channel>
+</rss>
