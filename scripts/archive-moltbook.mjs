@@ -112,9 +112,40 @@ function upsertIndex({ indexHtml, entryHtml }) {
 function updateFeed({ feedXml, itemXml, guid }) {
   if (feedXml.includes(`<guid>${guid}</guid>`)) return feedXml;
 
+  // Insert newest items at the top (before the first <item>).
+  const firstItem = feedXml.indexOf('<item>');
+  if (firstItem !== -1) {
+    return feedXml.slice(0, firstItem) + itemXml + '\n\n' + feedXml.slice(firstItem);
+  }
+
   const insertPoint = feedXml.indexOf('</channel>');
   if (insertPoint === -1) return feedXml + `\n${itemXml}\n`;
   return feedXml.slice(0, insertPoint) + `\n` + itemXml + `\n` + feedXml.slice(insertPoint);
+}
+
+function setLastBuildDate(feedXml, date = new Date()) {
+  const d = date.toUTCString();
+  if (feedXml.includes('<lastBuildDate>')) {
+    return feedXml.replace(/<lastBuildDate>[\s\S]*?<\/lastBuildDate>/, `<lastBuildDate>${d}</lastBuildDate>`);
+  }
+  const langIdx = feedXml.indexOf('</language>');
+  if (langIdx !== -1) {
+    const insertAt = langIdx + '</language>'.length;
+    return feedXml.slice(0, insertAt) + `\n    <lastBuildDate>${d}</lastBuildDate>` + feedXml.slice(insertAt);
+  }
+  return feedXml;
+}
+
+function setLatestSection(indexHtml) {
+  const m = indexHtml.match(/<ul class="postlist">[\s\S]*?<a href="([^"]+)">([\s\S]*?)<\/a>[\s\S]*?<span class="meta">\((\d{4}-\d{2}-\d{2})\)<\/span>/);
+  if (!m) return indexHtml;
+  const [_, href, title, date] = m;
+  const latestBlock = `<p><a href="${href}"><strong>${title}</strong></a><br/><span class="meta">${date}</span></p>`;
+
+  if (indexHtml.includes('<!-- LATEST_START -->') && indexHtml.includes('<!-- LATEST_END -->')) {
+    return indexHtml.replace(/<!-- LATEST_START -->[\s\S]*?<!-- LATEST_END -->/, `<!-- LATEST_START -->\n    ${latestBlock}\n    <!-- LATEST_END -->`);
+  }
+  return indexHtml;
 }
 
 async function main() {
@@ -142,6 +173,21 @@ async function main() {
   if (!newPosts.length) {
     console.log('No new posts since last archive.');
     state.lastCheckAt = new Date().toISOString();
+
+    // Still keep the homepage "Latest Dispatch" section + RSS build date fresh.
+    const docsDir = path.join(REPO_DIR, 'docs');
+    const indexPath = path.join(docsDir, 'index.html');
+    const feedPath = path.join(docsDir, 'feed.xml');
+
+    let indexHtml = fs.readFileSync(indexPath, 'utf8');
+    let feedXml = fs.readFileSync(feedPath, 'utf8');
+
+    indexHtml = setLatestSection(indexHtml);
+    feedXml = setLastBuildDate(feedXml);
+
+    fs.writeFileSync(indexPath, indexHtml);
+    fs.writeFileSync(feedPath, feedXml);
+
     writeJson(STATE_PATH, state);
     return;
   }
@@ -196,6 +242,10 @@ async function main() {
     state.lastArchivedPostId = p.id;
     state.lastArchivedAt = new Date().toISOString();
   }
+
+  // Update homepage Latest section + RSS build date
+  indexHtml = setLatestSection(indexHtml);
+  feedXml = setLastBuildDate(feedXml);
 
   fs.writeFileSync(indexPath, indexHtml);
   fs.writeFileSync(feedPath, feedXml);
