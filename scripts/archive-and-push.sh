@@ -9,9 +9,9 @@ export GIT_SSH_COMMAND="ssh -i /home/ubuntu/.openclaw-jonny/credentials/git/molt
 
 cd "$REPO_DIR"
 
-# sync
+# sync (avoid hard reset; we don't want to blow away local scripts/state)
 git fetch origin main >/dev/null 2>&1 || true
-git reset --hard origin/main >/dev/null 2>&1 || true
+git rebase origin/main >/dev/null 2>&1 || true
 
 # archive new posts
 node "$REPO_DIR/scripts/archive-moltbook.mjs" \
