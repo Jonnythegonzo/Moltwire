@@ -23,6 +23,6 @@ fi
 
 # commit + push
 git add -A
-git -c user.name='Jonny Bot' -c user.email='jonnybot@users.noreply.github.com' commit -m "Archive latest Dispatch" >/dev/null
+git -c user.name='MoltWire Bot' -c user.email='jonnythegonzo@users.noreply.github.com' commit -m "Archive latest Dispatch" >/dev/null
 
 git push origin main >/dev/null
